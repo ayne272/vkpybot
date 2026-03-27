@@ -56,12 +56,21 @@ async def growth_handler(message: Message) -> None:
         change = random.randint(1, 10)
         player.dick += change * sign
         player.last_roll_date = today
-        
+
+        if player.dick < 0:
+            player.dick = 0
+
         await session.commit()
 
         if is_new_player:
             await message.answer(
                 f"{player.first_name} {player.last_name}, Вітаю в грі писюн, ти зіграв в перший раз і зараз твій пісюн має довжину {player.dick} см."
+            )
+            return
+        
+        if player.dick == 0:
+            await message.answer(
+                f"{player.first_name} {player.last_name},  у тебе відвалилася піська("
             )
             return
 
