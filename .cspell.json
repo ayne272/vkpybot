@@ -1,0 +1,50 @@
+{
+  "import": [
+    "@cspell/dict-ru_ru/cspell-ext.json",
+    "@cspell/dict-software-terms/cspell-ext.json",
+    "@cspell/dict-node/cspell-ext.json"
+  ],
+  "language": "en, ru, ru-ru",
+  "files": [
+    "**/*.*",
+    ".github/**/*.yml",
+    ".github/**/*.yaml"
+  ],
+  "ignorePaths": [
+    "badges/**/*.*",
+    "coverage/**/*.*",
+    "**/*.pdb",
+    "**/*.dylib",
+    "**/*.dll",
+    "**/bin/**/*.*",
+    "**/obj/**/*.*",
+    "addons/**/*.*",
+    "package-lock.json",
+    "node_modules",
+    "vscode-extension",
+    ".git/{info,lfs,logs,refs,objects}/**",
+    ".git/{index,*refs,*HEAD}",
+    ".vscode",
+    ".vscode-insiders",
+    ".config",
+    ".editorconfig",
+    "bin",
+    "obj",
+    ".git",
+    "**/Migrations/**",
+    ".vscode",
+    "*.sh"
+  ],
+  "words": [
+    "aiosqlite",
+    "asyncpg",
+    "healthcheck",
+    "isready",
+    "psycopg",
+    "pydantic",
+    "sessionmaker",
+    "sqlalchemy",
+    "vkbottle",
+    "писюн"
+  ]
+}

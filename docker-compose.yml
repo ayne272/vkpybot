@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  bot:
+    build: .
+    container_name: vk_py_bot
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST=db
+    restart: unless-stopped
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16-alpine
+    container_name: vk_bot_postgres
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
