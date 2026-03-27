@@ -6,7 +6,6 @@ from sqlalchemy import select
 
 from src.db.database import AsyncSessionLocal
 from src.db.models import Player
-from src.utils.text import mention
 
 
 labeler = BotLabeler()
@@ -27,6 +26,7 @@ async def growth_handler(message: Message) -> None:
 
         if not player:
             is_new_player = True
+
             users_info = await message.ctx_api.users.get(user_ids=[message.from_id])
             first_name = users_info[0].first_name
             last_name = users_info[0].last_name
@@ -103,9 +103,9 @@ async def top_handler(message: Message) -> None:
         medals = ["🥇", "🥈", "🥉"]
     
         for idx, player in enumerate(top_players):
-            medal = medals[idx] if idx < 3 else ""
+            medal = medals[idx] if idx < 3 else f"{idx + 1}. "
             lines.append(
-                f"{medal} {idx + 1}. {player.first_name} {player.last_name} — "
+                f"{medal} {player.first_name} {player.last_name} — "
                 f"{player.dick} см."
             )
         
