@@ -5,7 +5,7 @@ from sqlalchemy import update
 from src.db.database import AsyncSessionLocal
 from src.db.models import Player
 
-from config import ADMIN_IDS
+from src.config import ADMIN_IDS
 
 labeler = BotLabeler()
 
