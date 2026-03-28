@@ -74,7 +74,7 @@ async def growth_handler(message: Message) -> None:
             )
             return
 
-        if change > 0:
+        if sign == 1:
             msg = f"{player.first_name} {player.last_name}, твій пісюн виріс на {change} см. "
         else:
             msg = f"{player.first_name} {player.last_name}, твій пісюн зменшився на {abs(change)} см. "
