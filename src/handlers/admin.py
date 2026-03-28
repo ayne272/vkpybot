@@ -2,6 +2,7 @@ from vkbottle.dispatch.rules import ABCRule
 from vkbottle.bot import BotLabeler, Message
 from sqlalchemy import update
 
+from src.utils.text import mention
 from src.db.database import AsyncSessionLocal
 from src.db.models import Player
 
@@ -35,3 +36,28 @@ async def reset_handler(message: Message) -> None:
         f"✅ Таймеры успешно сброшены!\n"
         f"🔄 Обновлено профилей: {result.rowcount}\n"
     )
+
+@labeler.message(text="/изменить_писюн <new_dick>")
+async def set_dick_handler(message: Message, new_dick: str) -> None:
+    """Устанавливает игроку новый писюн в текущем чате."""
+
+    if not message.reply_message:
+        return
+        
+    try:
+        new_height = int(new_dick)
+    except ValueError:
+        return
+
+    target_id = message.reply_message.from_id
+    chat_id = message.peer_id
+
+    async with AsyncSessionLocal() as session:
+        stmt = (
+            update(Player)
+            .where(Player.vk_id == target_id, Player.chat_id == chat_id)
+            .values(height=new_height)
+        )
+        result = await session.execute(stmt)
+        await session.commit()
+            

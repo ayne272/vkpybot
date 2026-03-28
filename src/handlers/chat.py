@@ -12,7 +12,7 @@ labeler = BotLabeler()
 labeler.auto_rules = [PeerRule()] 
 
 @labeler.message(text=["/писюн"])
-async def growth_handler(message: Message) -> None:
+async def dick_handler(message: Message) -> None:
     async with AsyncSessionLocal() as session:
         player = await session.scalar(
             select(Player).where(
