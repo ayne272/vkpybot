@@ -104,12 +104,11 @@ async def top_handler(message: Message) -> None:
     
         for idx, player in enumerate(top_players):
             medal = medals[idx] if idx < 3 else f" {idx + 1}. "
-            lines.append(
-                f"{medal} {player.first_name} {player.last_name} — "
-            )
             if player.dick == 0:
-                lines.append(f"відвалилася піська")
+                lines.append(
+                    f"{medal} {player.first_name} {player.last_name} — відвалилася піська"
+                )
             else:
-                lines.append(f"{player.dick} см.")
+                lines.append(f"{medal} {player.first_name} {player.last_name} — {player.dick} см.")
         
         await message.answer("\n".join(lines))
