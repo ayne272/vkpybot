@@ -59,4 +59,5 @@ async def set_dick_handler(message: Message, new_dick_str: str) -> None:
         result = await session.execute(stmt)
         await session.commit()
 
-    await message.answer(f"Успіх!")            
+    if result.rowcount > 0:
+        await message.answer(f"Успіх!")
