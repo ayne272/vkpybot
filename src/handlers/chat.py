@@ -77,7 +77,7 @@ async def growth_handler(message: Message) -> None:
         if sign == 1:
             msg = f"{player.first_name} {player.last_name}, твій пісюн виріс на {change} см. "
         else:
-            msg = f"{player.first_name} {player.last_name}, твій пісюн зменшився на {abs(change)} см. "
+            msg = f"{player.first_name} {player.last_name}, твій пісюн зменшився на {change} см. "
             
         msg += f"Тепер його довжина {player.dick} см."
         
@@ -106,7 +106,10 @@ async def top_handler(message: Message) -> None:
             medal = medals[idx] if idx < 3 else f" {idx + 1}. "
             lines.append(
                 f"{medal} {player.first_name} {player.last_name} — "
-                f"{player.dick} см."
             )
+            if player.dick == 0:
+                lines.append(f"відвалилася піська")
+            else:
+                lines.append(f"{player.dick} см.")
         
         await message.answer("\n".join(lines))
