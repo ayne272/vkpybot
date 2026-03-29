@@ -48,17 +48,30 @@ async def dick_handler(message: Message) -> None:
             )
             return
 
-        if is_new_player:
-            sign = 1
+        if is_new_player or player.dick == 0:
+            event = 'grow'
         else:
-            sign = random.choice([-1, 1])
-        
-        change = random.randint(1, 10)
-        player.dick += change * sign
-        player.last_roll_date = today
+            event = random.choices(
+                population=['grow', 'shrink'],
+                weights=[60, 40] 
+            )
 
-        if player.dick < 0:
-            player.dick = 0
+        change = random.randint(1, 10)
+
+        match event:
+            case 'grow':
+                player.dick += change
+                msg = f"{player.first_name} {player.last_name}, твій пісюн виріс на {change} см. "
+
+            case 'shrink':
+                player.dick -= change
+
+                if player.dick < 0:
+                    player.dick = 0
+
+                msg = f"{player.first_name} {player.last_name}, твій пісюн зменшився на {change} см. "
+        
+        player.last_roll_date = today
 
         await session.commit()
 
@@ -73,11 +86,6 @@ async def dick_handler(message: Message) -> None:
                 f"{player.first_name} {player.last_name},  у тебе відвалилася піська("
             )
             return
-
-        if sign == 1:
-            msg = f"{player.first_name} {player.last_name}, твій пісюн виріс на {change} см. "
-        else:
-            msg = f"{player.first_name} {player.last_name}, твій пісюн зменшився на {change} см. "
             
         msg += f"Тепер його довжина {player.dick} см."
         
