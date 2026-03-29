@@ -54,7 +54,7 @@ async def dick_handler(message: Message) -> None:
             event = random.choices(
                 population=['grow', 'shrink'],
                 weights=[60, 40] 
-            )
+            )[0]
 
         change = random.randint(1, 10)
 
@@ -65,12 +65,11 @@ async def dick_handler(message: Message) -> None:
 
             case 'shrink':
                 player.dick -= change
+                msg = f"{player.first_name} {player.last_name}, твій пісюн зменшився на {change} см. "
 
                 if player.dick < 0:
                     player.dick = 0
 
-                msg = f"{player.first_name} {player.last_name}, твій пісюн зменшився на {change} см. "
-        
         player.last_roll_date = today
 
         await session.commit()
