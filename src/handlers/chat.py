@@ -7,6 +7,8 @@ from sqlalchemy import select
 from src.db.database import AsyncSessionLocal
 from src.db.models import Player
 
+from src.utils.loot import get_loot
+
 
 labeler = BotLabeler()
 labeler.auto_rules = [PeerRule()] 
@@ -47,39 +49,31 @@ async def dick_handler(message: Message) -> None:
                 f"{player.first_name} {player.last_name}, ти сьогодні вже грав("
             )
             return
+        
+        if is_new_player:
+            await message.answer(
+                f"{player.first_name} {player.last_name}, Вітаю в грі писюн, ти зіграв в перший раз і зараз твій пісюн має довжину {player.dick} см."
+            )
+            await session.commit()
+            return
 
-        if is_new_player or player.dick == 0:
-            event = 'grow'
+        change = get_loot()
+
+        if change > 0:
+            player.dick += change
+            msg = f"{player.first_name} {player.last_name}, твій пісюн виріс на {change} см. "
+
         else:
-            event = random.choices(
-                population=['grow', 'shrink'],
-                weights=[60, 40] 
-            )[0]
+            player.dick -= change
+            msg = f"{player.first_name} {player.last_name}, твій пісюн зменшився на {change} см. "
 
-        change = random.randint(1, 10)
-
-        match event:
-            case 'grow':
-                player.dick += change
-                msg = f"{player.first_name} {player.last_name}, твій пісюн виріс на {change} см. "
-
-            case 'shrink':
-                player.dick -= change
-                msg = f"{player.first_name} {player.last_name}, твій пісюн зменшився на {change} см. "
-
-                if player.dick < 0:
-                    player.dick = 0
+            if player.dick < 0:
+                player.dick = 0
 
         player.last_roll_date = today
 
         await session.commit()
 
-        if is_new_player:
-            await message.answer(
-                f"{player.first_name} {player.last_name}, Вітаю в грі писюн, ти зіграв в перший раз і зараз твій пісюн має довжину {player.dick} см."
-            )
-            return
-        
         if player.dick == 0:
             await message.answer(
                 f"{player.first_name} {player.last_name},  у тебе відвалилася піська("

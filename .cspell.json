@@ -45,6 +45,7 @@
     "sessionmaker",
     "sqlalchemy",
     "vkbottle",
+    "Захардкоженный",
     "писюн"
   ]
 }
