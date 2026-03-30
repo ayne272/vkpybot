@@ -39,7 +39,7 @@ async def dick_handler(message: Message) -> None:
                 chat_id=message.peer_id, 
                 first_name=first_name, 
                 last_name=last_name,
-                dick=base_dick
+                dick=base_dick            
             )
 
             session.add(player)
@@ -50,6 +50,8 @@ async def dick_handler(message: Message) -> None:
             )
             return
         
+        player.last_roll_date = today
+        
         if is_new_player:
             await message.answer(
                 f"{player.first_name} {player.last_name}, Вітаю в грі писюн, ти зіграв в перший раз і зараз твій пісюн має довжину {player.dick} см."
@@ -58,19 +60,16 @@ async def dick_handler(message: Message) -> None:
             return
 
         change = get_loot()
+        player.dick += change
 
         if change > 0:
-            player.dick += change
-            msg = f"{player.first_name} {player.last_name}, твій пісюн виріс на {change} см. "
+            msg = f"{player.first_name} {player.last_name}, твій пісюн виріс на {abs(change)} см. "
 
         else:
-            player.dick -= change
-            msg = f"{player.first_name} {player.last_name}, твій пісюн зменшився на {change} см. "
+            msg = f"{player.first_name} {player.last_name}, твій пісюн зменшився на {abs(change)} см. "
 
             if player.dick < 0:
                 player.dick = 0
-
-        player.last_roll_date = today
 
         await session.commit()
 
