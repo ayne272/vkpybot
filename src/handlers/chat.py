@@ -58,13 +58,16 @@ async def dick_handler(message: Message) -> None:
             )
             await session.commit()
             return
+        
+        if player.dick != 0:
+            change = get_loot()
+        else:
+            change = random.randint(1, 10)
 
-        change = get_loot()
         player.dick += change
 
         if change > 0:
-            msg = f"{player.first_name} {player.last_name}, твій пісюн виріс на {abs(change)} см. "
-
+            msg = f"{player.first_name} {player.last_name}, твій пісюн виріс на {change} см. "
         else:
             msg = f"{player.first_name} {player.last_name}, твій пісюн зменшився на {abs(change)} см. "
 
