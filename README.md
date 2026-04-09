@@ -128,13 +128,51 @@ python -m src.bot
 
 ## Бэкапы
 
-Автоматические ежедневные бэкапы можно настроить через Kubernetes CronJob.
+Автоматические ежедневные бэкапы настроены через Kubernetes CronJob.
+
+### Автоматические бэкапы
+
+Бэкапы создаются ежедневно в 3:00 UTC (6:00 MSK) и хранятся 7 дней.
+
+**Проверить статус:**
+```bash
+kubectl get cronjob postgres-backup -n vkbot
+kubectl get jobs -n vkbot | grep backup
+```
+
+**Запустить бэкап вручную:**
+```bash
+kubectl create job --from=cronjob/postgres-backup manual-backup -n vkbot
+kubectl logs -n vkbot job/manual-backup
+```
+
+### Скачивание бэкапов
+
+Используйте скрипт для скачивания бэкапов на локальный компьютер:
+
+```bash
+./scripts/download-backup.sh
+```
+
+Бэкапы сохраняются в директорию `backups/`.
+
+### Восстановление из бэкапа
+
+⚠️ **Внимание:** Восстановление удалит все текущие данные!
+
+```bash
+./scripts/restore-backup.sh
+```
+
+После восстановления перезапустите vkbot:
+```bash
+kubectl rollout restart deployment vkbot -n vkbot
+```
 
 ## CI/CD
 
 Проект использует GitHub Actions для:
 - Unit тестов (pytest)
-- Spell check (cSpell)
 - Сборки и публикации Docker образов в GHCR
 
 ArgoCD автоматически деплоит изменения из main ветки.

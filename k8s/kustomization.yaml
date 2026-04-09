@@ -8,3 +8,5 @@ resources:
   - postgres-deployment.yaml
   - postgres-service.yaml
   - vkbot-deployment.yaml
+  - backup-pvc.yaml
+  - backup-cronjob.yaml

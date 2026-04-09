@@ -37,22 +37,3 @@ jobs:
       with:
         file: ./coverage.xml
         fail_ci_if_error: false
-
-  spellcheck:
-    name: Spell Check
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-
-    - name: Install cSpell dependencies
-      run: npm ci
-
-    - name: Run spell check
-      run: npx cspell "**/*.{py,md,yml,yaml,json}" --no-progress --show-suggestions

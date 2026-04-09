@@ -221,9 +221,6 @@ __marimo__/
 # Backups directory
 backups/
 
-# Node modules (for cSpell dictionaries)
-node_modules/
-
 # SOPS age keys (never commit private keys!)
 .config/sops/age/keys.txt
 
