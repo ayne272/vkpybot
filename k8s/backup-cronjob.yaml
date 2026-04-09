@@ -23,6 +23,9 @@ spec:
             - /bin/sh
             - -c
             - |
+              # Установить пароль для pg_dump
+              export PGPASSWORD=$POSTGRES_PASSWORD
+
               # Создать бэкап
               BACKUP_FILE="/backups/vkbot_$(date +%Y%m%d_%H%M%S).dump"
               pg_dump -h db -U $POSTGRES_USER -d $POSTGRES_DB -Fc -f "$BACKUP_FILE"
