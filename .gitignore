@@ -214,3 +214,16 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Database dumps
+*.dump
+
+# Backups directory
+backups/
+
+# Node modules (for cSpell dictionaries)
+node_modules/
+package-lock.json
+
+# SOPS age keys (never commit private keys!)
+.config/sops/age/keys.txt

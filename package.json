@@ -1,0 +1,7 @@
+{
+  "devDependencies": {
+    "@cspell/dict-node": "^5.0.9",
+    "@cspell/dict-ru_ru": "^2.3.2",
+    "@cspell/dict-software-terms": "^5.2.2"
+  }
+}
