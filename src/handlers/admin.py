@@ -40,24 +40,43 @@ async def reset_handler(message: Message) -> None:
 async def set_dick_handler(message: Message, new_dick_str: str) -> None:
     """Устанавливает игроку новый писюн в текущем чате."""
     if not message.reply_message:
+        await message.answer("❌ Нужно ответить на сообщение пользователя")
         return
-        
+
     try:
         new_dick = int(new_dick_str)
     except ValueError:
+        await message.answer("❌ Неправильный формат. Используйте: /изменить_писюн 15")
         return
 
     target_id = message.reply_message.from_id
     chat_id = message.peer_id
 
     async with AsyncSessionLocal() as session:
+        # Попытка обновить существующего игрока
         stmt = (
             update(Player)
             .where(Player.vk_id == target_id, Player.chat_id == chat_id)
             .values(dick=new_dick)
         )
         result = await session.execute(stmt)
+
+        # Если игрок не найден, создать нового
+        if result.rowcount == 0:
+            # Получить информацию о пользователе
+            user_info = await message.ctx_api.users.get(user_ids=[target_id])
+            if user_info:
+                user = user_info[0]
+                new_player = Player(
+                    vk_id=target_id,
+                    chat_id=chat_id,
+                    first_name=user.first_name,
+                    last_name=user.last_name,
+                    dick=new_dick,
+                    last_roll_date=None
+                )
+                session.add(new_player)
+
         await session.commit()
 
-    if result.rowcount > 0:
-        await message.answer(f"Успіх!")
+    await message.answer(f"✅ Успіх! Новый писюн: {new_dick}")
