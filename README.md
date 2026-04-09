@@ -58,20 +58,20 @@ docker compose logs -f bot
 
 ### Деплой в Kubernetes
 
-1. Отредактируйте `k8s/deployment.yaml` и добавьте свои credentials в секцию Secret
+См. подробную документацию:
+- [ArgoCD Setup](argocd/README.md) - GitOps деплой (рекомендуется)
+- [Kubernetes Manifests](k8s/README.md) - ручной деплой
+- [Secret Management](docs/SECRETS.md) - шифрование секретов с SOPS
 
-2. Примените манифест:
+Быстрый старт с ArgoCD:
 ```bash
-kubectl apply -f k8s/deployment.yaml
-```
+# Установите ArgoCD в кластер
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
-3. Проверьте статус:
-```bash
-kubectl get pods -n vkbot
-kubectl logs -n vkbot -l app=vkbot
+# Примените application
+kubectl apply -f argocd/application.yaml
 ```
-
-Подробнее см. [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
 
 ## Структура проекта
 
@@ -84,8 +84,11 @@ vkpybot/
 │   ├── db/                # Модели и подключение к БД
 │   └── utils/             # Утилиты
 ├── k8s/                   # Kubernetes манифесты
-├── scripts/               # Скрипты для деплоя и обслуживания
+├── argocd/                # ArgoCD application
+├── scripts/               # Скрипты (SOPS setup)
 ├── docs/                  # Документация
+├── tests/                 # Unit тесты
+├── .github/workflows/     # CI/CD pipelines
 ├── Dockerfile             # Docker образ
 ├── docker-compose.yml     # Локальная разработка
 └── requirements.txt       # Python зависимости
@@ -125,19 +128,16 @@ python -m src.bot
 
 ## Бэкапы
 
-Автоматические ежедневные бэкапы настроены через Kubernetes CronJob.
+Автоматические ежедневные бэкапы можно настроить через Kubernetes CronJob.
 
-Подробнее см. [docs/BACKUP.md](docs/BACKUP.md)
+## CI/CD
 
-## Деплой
+Проект использует GitHub Actions для:
+- Unit тестов (pytest)
+- Spell check (cSpell)
+- Сборки и публикации Docker образов в GHCR
 
-Для быстрого деплоя используйте скрипт:
-
-```bash
-./scripts/deploy.sh
-```
-
-Подробнее см. [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
+ArgoCD автоматически деплоит изменения из main ветки.
 
 ## Лицензия
 
