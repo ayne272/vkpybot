@@ -5,6 +5,7 @@ set -e
 
 NAMESPACE="vkbot"
 BACKUP_DIR="./backups"
+REMOTE_SERVER="ayne@172.16.205.102"
 
 echo "=== Скачивание бэкапа PostgreSQL ==="
 echo
@@ -12,22 +13,30 @@ echo
 # Создать локальную директорию для бэкапов
 mkdir -p "$BACKUP_DIR"
 
-# Получить имя пода postgres
-POD=$(kubectl get pod -n $NAMESPACE -l app=postgres -o jsonpath='{.items[0].metadata.name}')
+# Создать временный под для доступа к backup PVC
+echo "Создание временного пода для доступа к бэкапам..."
+ssh $REMOTE_SERVER "kubectl run backup-access --image=busybox --restart=Never -n $NAMESPACE --overrides='{
+  \"spec\": {
+    \"containers\": [{
+      \"name\": \"backup-access\",
+      \"image\": \"busybox\",
+      \"command\": [\"sleep\", \"300\"],
+      \"volumeMounts\": [{\"name\": \"backups\", \"mountPath\": \"/backups\"}]
+    }],
+    \"volumes\": [{\"name\": \"backups\", \"persistentVolumeClaim\": {\"claimName\": \"backup-pvc\"}}]
+  }
+}' 2>/dev/null || echo 'Pod already exists'"
 
-if [ -z "$POD" ]; then
-    echo "Ошибка: Под postgres не найден в namespace $NAMESPACE"
-    exit 1
-fi
-
-echo "Найден под: $POD"
-echo
+# Дождаться запуска пода
+echo "Ожидание запуска пода..."
+ssh $REMOTE_SERVER "kubectl wait --for=condition=ready pod/backup-access -n $NAMESPACE --timeout=30s"
 
 # Показать список доступных бэкапов
+echo
 echo "Доступные бэкапы:"
-kubectl exec -n $NAMESPACE $POD -- ls -lh /backups/ 2>/dev/null | grep vkbot_ || {
-    echo "Бэкапы не найдены. Возможно CronJob еще не выполнялся."
-    echo "Запустите вручную: kubectl create job --from=cronjob/postgres-backup manual-backup -n vkbot"
+ssh $REMOTE_SERVER "kubectl exec -n $NAMESPACE backup-access -- ls -lh /backups/" | grep vkbot_ || {
+    echo "Бэкапы не найдены."
+    ssh $REMOTE_SERVER "kubectl delete pod backup-access -n $NAMESPACE"
     exit 1
 }
 
@@ -36,18 +45,19 @@ read -p "Введите имя файла для скачивания: " BACKUP_
 
 if [ -z "$BACKUP_FILE" ]; then
     echo "Имя файла не указано"
+    ssh $REMOTE_SERVER "kubectl delete pod backup-access -n $NAMESPACE"
     exit 1
 fi
 
 # Скачать бэкап
 echo "Скачивание $BACKUP_FILE..."
-kubectl cp $NAMESPACE/$POD:/backups/$BACKUP_FILE $BACKUP_DIR/$BACKUP_FILE
+ssh $REMOTE_SERVER "kubectl cp $NAMESPACE/backup-access:/backups/$BACKUP_FILE /tmp/$BACKUP_FILE"
+scp $REMOTE_SERVER:/tmp/$BACKUP_FILE $BACKUP_DIR/$BACKUP_FILE
+ssh $REMOTE_SERVER "rm /tmp/$BACKUP_FILE"
 
-if [ $? -eq 0 ]; then
-    echo
-    echo "✓ Бэкап успешно скачан: $BACKUP_DIR/$BACKUP_FILE"
-    ls -lh $BACKUP_DIR/$BACKUP_FILE
-else
-    echo "✗ Ошибка при скачивании бэкапа"
-    exit 1
-fi
+# Удалить временный под
+ssh $REMOTE_SERVER "kubectl delete pod backup-access -n $NAMESPACE"
+
+echo
+echo "✓ Бэкап успешно скачан: $BACKUP_DIR/$BACKUP_FILE"
+ls -lh $BACKUP_DIR/$BACKUP_FILE
