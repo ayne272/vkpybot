@@ -5,10 +5,8 @@ namespace: vkbot
 
 resources:
   - namespace.yaml
+  - secret.yaml
   - postgres-pvc.yaml
   - postgres-deployment.yaml
   - postgres-service.yaml
   - vkbot-deployment.yaml
-
-generators:
-  - secret-generator.yaml

@@ -11,8 +11,6 @@ spec:
     repoURL: https://github.com/ayne272/vkpybot.git
     targetRevision: main
     path: k8s
-    plugin:
-      name: argocd-vault-plugin-kustomize
   destination:
     server: https://kubernetes.default.svc
     namespace: vkbot
