@@ -11,7 +11,8 @@ from src.utils.loot import get_loot
 
 
 labeler = BotLabeler()
-labeler.auto_rules = [PeerRule()] 
+labeler.auto_rules = [PeerRule()]
+labeler.message_view.replace_mention = True
 
 @labeler.message(text=["/писюн"])
 async def dick_handler(message: Message) -> None:
