@@ -15,3 +15,11 @@ def get_cm_word(count: int) -> str:
 def mention(vk_id: int, first_name: str, last_name: str) -> str:
     """Создает кликабельное упоминание пользователя ВК."""
     return f"[id{vk_id}|{first_name} {last_name}]"
+
+def tag_mention(vk_id: int, text: str) -> str:
+    """Создает тег пользователя ВК."""
+    return f"@id{vk_id} ({text})"
+
+def tag_mention(domain: str, text: str) -> str:
+    """Создает тег пользователя ВК."""
+    return f"@{domain} ({text})"
